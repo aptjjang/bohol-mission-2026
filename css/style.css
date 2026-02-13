@@ -1,0 +1,1831 @@
+/* ===== 기본 리셋 & 변수 ===== */
+:root {
+  --primary: #8B6914;
+  --primary-light: #C4982A;
+  --primary-dark: #6B4F10;
+  --primary-bg: #FDF8EC;
+  --accent: #D4A017;
+  --bg: #F5F0E8;
+  --white: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --text: #2C2416;
+  --text-secondary: #6B5B3E;
+  --text-light: #9B8B6E;
+  --border: #E8DCC8;
+  --success: #4CAF50;
+  --danger: #E74C3C;
+  --shadow: 0 2px 8px rgba(107, 79, 16, 0.1);
+  --shadow-lg: 0 4px 16px rgba(107, 79, 16, 0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --nav-height: 60px;
+  --header-height: 52px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  padding-top: var(--header-height);
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+}
+
+/* ===== 헤더 ===== */
+#app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: var(--primary);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+#app-header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+
+.header-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.header-btn:active {
+  background: rgba(255,255,255,0.15);
+}
+
+.header-btn.hidden {
+  visibility: hidden;
+}
+
+.header-spacer {
+  width: 40px;
+}
+
+/* ===== 페이지 ===== */
+.page {
+  display: none;
+  padding: 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 스플래시 화면 ===== */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#splash-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ===== 홈 화면 ===== */
+.home-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-lg);
+}
+
+.home-hero.hero-slideshow {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #000;
+  min-height: 220px;
+  padding: 0;
+  aspect-ratio: 16 / 9;
+}
+
+.home-cross {
+  font-size: 36px;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.home-church {
+  font-size: 13px;
+  opacity: 0.8;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.home-theme {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.home-theme-eng {
+  font-size: 15px;
+  opacity: 0.85;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.home-verse {
+  font-size: 13px;
+  line-height: 1.7;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.verse-ref {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.home-period {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.home-dest {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.home-countdown {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 메뉴 그리드 */
+.home-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--card-bg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 18px 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+
+.menu-card:active {
+  transform: scale(0.96);
+}
+
+.menu-icon {
+  font-size: 28px;
+}
+
+.menu-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ===== 교회 로고 ===== */
+.home-logo {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.home-logo img {
+  max-width: 120px;
+  height: auto;
+  opacity: 0.85;
+}
+
+/* ===== 카드 ===== */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.card-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* ===== 탭 네비게이션 ===== */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ===== 목표 리스트 ===== */
+.goal-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.goal-item:last-child { border-bottom: none; }
+
+.goal-item h4 {
+  font-size: 14px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.goal-item p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== 서약서 ===== */
+.pledge-list { margin: 8px 0; }
+
+.pledge-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pledge-item:last-child { border-bottom: none; }
+
+.pledge-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.pledge-item p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.pledge-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid var(--primary);
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.pledge-date {
+  margin-top: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* ===== 규칙 리스트 ===== */
+.rule-list {
+  list-style: none;
+  padding: 0;
+}
+
+.rule-list li {
+  position: relative;
+  padding: 8px 0 8px 20px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--border);
+}
+
+.rule-list li:last-child { border-bottom: none; }
+
+.rule-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ===== 팀원 ===== */
+.member-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.member-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.member-card:active { transform: scale(0.98); }
+
+.member-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  flex-shrink: 0;
+}
+
+.member-avatar.male { background: #5B8FBF; }
+.member-avatar.female { background: #C77D9E; }
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.member-detail {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.member-talent {
+  background: var(--primary-bg);
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.member-expanded {
+  display: none;
+  padding: 10px 14px;
+  background: var(--primary-bg);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  margin-top: -8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.member-expanded.show { display: block; }
+
+/* 조직/팀사역/숙소 */
+.org-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+
+.org-role {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-bg);
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.org-members {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.org-leader {
+  font-weight: 600;
+}
+
+/* ===== 조직도 차트 ===== */
+.org-chart {
+  padding: 8px 0;
+}
+
+.org-chart-top {
+  display: flex;
+  justify-content: center;
+}
+
+.org-chart-node {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+}
+
+.org-chart-head {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+  padding: 12px 28px;
+}
+
+.org-chart-head .org-chart-role {
+  color: rgba(255,255,255,0.8);
+}
+
+.org-chart-head .org-chart-name {
+  color: var(--white);
+  font-size: 16px;
+}
+
+.org-chart-role {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.org-chart-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.org-chart-members {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 3px;
+}
+
+.org-chart-line-v {
+  width: 2px;
+  height: 16px;
+  background: var(--primary-light);
+  margin: 0 auto;
+}
+
+.org-chart-line-h {
+  height: 2px;
+  background: var(--primary-light);
+  margin: 0 16px 0 16px;
+}
+
+.org-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 380px) {
+  .org-chart-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== 팀사역 이미지 카드 ===== */
+.ministry-card .ministry-card-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ministry-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ministry-card-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-bg);
+  border-radius: 12px;
+}
+
+/* ===== 숙소 주소 ===== */
+.room-address {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--text-light);
+  margin-left: 6px;
+  font-weight: 400;
+}
+
+/* ===== 일정 ===== */
+.schedule-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.schedule-tabs::-webkit-scrollbar { display: none; }
+
+.schedule-day-btn,
+.journal-day-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.schedule-day-btn.active,
+.journal-day-btn.active {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.day-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.day-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.day-title-wrap h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.day-title-wrap span {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.day-today {
+  border: 2px solid var(--accent);
+}
+
+.event-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.event-item:last-child { border-bottom: none; }
+
+.event-time {
+  min-width: 56px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  padding-top: 1px;
+}
+
+.event-desc {
+  font-size: 13.5px;
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* ===== 체크리스트 ===== */
+.checklist-progress {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.check-item:active { background: var(--primary-bg); }
+
+.check-item.checked {
+  opacity: 0.6;
+}
+
+.check-item.checked .check-label {
+  text-decoration: line-through;
+}
+
+.check-box {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.check-item.checked .check-box {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.check-box::after {
+  content: '';
+  display: none;
+  width: 6px;
+  height: 10px;
+  border: solid var(--white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.check-item.checked .check-box::after {
+  display: block;
+}
+
+.check-label {
+  font-size: 14px;
+  flex: 1;
+}
+
+.checklist-note {
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--primary-dark);
+  line-height: 1.6;
+}
+
+/* ===== 기도 ===== */
+.prayer-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+}
+
+.prayer-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.prayer-card p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.prayer-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.daily-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  box-shadow: var(--shadow);
+}
+
+.daily-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 80px;
+}
+
+.daily-checks {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.daily-check-btn {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.daily-check-btn.checked {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--white);
+}
+
+/* ===== 찬양 ===== */
+.song-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.song-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.song-header:active { background: var(--primary-bg); }
+
+.song-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.song-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  color: var(--primary);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.song-card.open .song-toggle {
+  transform: rotate(180deg);
+}
+
+.song-card.open .song-header {
+  border-bottom-color: var(--border);
+}
+
+.song-lyrics {
+  display: none;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+.song-card.open .song-lyrics {
+  display: block;
+}
+
+/* ===== 현지어 ===== */
+.lang-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0;
+  align-items: center;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.lang-row:active { background: var(--primary-bg); }
+
+.lang-tts-btn {
+  margin-right: 10px;
+}
+
+.lang-ko {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-right: 1px solid var(--border);
+}
+
+.lang-local {
+  padding: 10px 14px;
+}
+
+.lang-cebuano {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.lang-pron {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ===== 현지어 번역 ===== */
+.translate-input-wrap {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.translate-input-wrap .text-input {
+  flex: 1;
+}
+
+.translate-result {
+  margin-top: 8px;
+}
+
+.translate-result.hidden { display: none; }
+
+.translate-loading {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.translate-card {
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+
+.translate-original {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.translate-arrow {
+  font-size: 18px;
+  color: var(--primary-light);
+  margin: 4px 0;
+}
+
+.translate-cebuano {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.translate-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-save-translate {
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+.translate-history-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.translate-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.translate-history-row:last-child { border-bottom: none; }
+
+.translate-history-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.th-src { color: var(--text-secondary); }
+.th-arrow { margin: 0 6px; color: var(--text-light); }
+.th-ceb { font-weight: 600; color: var(--primary); }
+
+.translate-history-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.th-delete {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--text-light);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.th-delete:active { background: var(--border); }
+
+/* ===== 복음전도 (단계별 + TTS) ===== */
+.gospel-stage {
+  margin-bottom: 16px;
+}
+
+.gospel-stage:last-child { margin-bottom: 0; }
+
+.gospel-stage-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--primary);
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.gospel-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 6px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.gospel-step:active { background: var(--primary-bg); }
+
+.gospel-step:last-child { border-bottom: none; }
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-eng {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.step-ko {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.tts-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--primary-bg);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.tts-btn:active,
+.tts-btn.speaking {
+  background: var(--primary);
+  color: var(--white);
+  transform: scale(1.1);
+}
+
+/* 사도신경/주기도문 TTS 제목 */
+.scripture-tts-title {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.scripture-tts-title:active {
+  opacity: 0.7;
+}
+
+.tts-btn-lg {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.scripture-text {
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  font-family: inherit;
+  color: var(--text);
+}
+
+/* ===== 선교일지 ===== */
+.journal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+#journal-date-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.weather-select {
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--white);
+  color: var(--text);
+}
+
+.journal-schedule-summary {
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--primary-dark);
+  line-height: 1.6;
+}
+
+.journal-textarea {
+  min-height: 200px;
+  resize: vertical;
+}
+
+.journal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* ===== 평가서 ===== */
+.eval-question {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+}
+
+.eval-question label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  display: block;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.eval-question .q-number {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.eval-slider {
+  width: 100%;
+  margin: 8px 0;
+  accent-color: var(--primary);
+}
+
+.eval-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.eval-slider-value {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 4px 0;
+}
+
+.eval-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+/* ===== 공통 요소 ===== */
+.text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--white);
+  resize: vertical;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.1);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:active { background: var(--primary-dark); }
+
+.save-status {
+  font-size: 13px;
+  color: var(--success);
+}
+
+.section-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+/* ===== 하단 네비게이션 ===== */
+#bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--nav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  z-index: 100;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  color: var(--text-light);
+  transition: color 0.2s;
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item span {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ===== 더보기 메뉴 ===== */
+.more-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+.more-menu.hidden { display: none; }
+
+.more-menu-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.more-menu-content {
+  position: absolute;
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 20px 16px;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.more-menu-content h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.more-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.more-item:last-child { border-bottom: none; }
+.more-item:active { background: var(--primary-bg); }
+
+.more-icon {
+  font-size: 20px;
+  width: 28px;
+  text-align: center;
+}
+
+/* ===== 유틸 ===== */
+.hidden { display: none !important; }
+
+/* ===== 반응형 - 넓은 화면 ===== */
+@media (min-width: 480px) {
+  .home-menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  main { max-width: 600px; margin: 0 auto; }
+  .home-menu-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ===== 페이지 배경 이미지 ===== */
+.page-bg {
+  position: relative;
+}
+
+.page-bg::before {
+  content: '';
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+}
+
+#page-info::before,
+#page-songs::before { background-image: url('../images/bg/church.jpg'); }
+#page-team::before,
+#page-gospel::before { background-image: url('../images/bg/cross.jpg'); }
+#page-schedule::before { background-image: url('../images/bg/bohol_beach.jpg'); }
+#page-prayer::before,
+#page-eval::before { background-image: url('../images/bg/prayer.jpg'); }
+#page-language::before { background-image: url('../images/bg/bohol_hills.jpg'); }
+
+/* ===== 보홀 히어로 & 갤러리 ===== */
+.bohol-hero {
+  height: 160px;
+  border-radius: var(--radius);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.bohol-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+}
+
+.bohol-hero-overlay h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.bohol-hero-overlay p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.bohol-gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.bohol-photo {
+  height: 120px;
+  border-radius: var(--radius-sm);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.bohol-photo span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.6));
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== 준비물 목록 (체크박스 없는 리스트) ===== */
+.supplies-category {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+
+.supplies-category-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.supplies-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.supply-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: var(--primary-bg);
+  border-radius: 16px;
+  font-size: 13px;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* ===== 한눈에 보기 (일정 오버뷰) ===== */
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.overview-table th {
+  background: var(--primary);
+  color: var(--white);
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.overview-table th:last-child { border-right: none; }
+
+.overview-table td {
+  padding: 8px 6px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.overview-table td:last-child { border-right: none; }
+
+.overview-table tr:last-child td { border-bottom: none; }
+
+.overview-table .ov-day {
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  white-space: nowrap;
+  min-width: 56px;
+}
+
+.overview-table .ov-am,
+.overview-table .ov-pm,
+.overview-table .ov-eve {
+  color: var(--text);
+}
+
+/* ===== 일정 + 선교일지 통합 ===== */
+.schedule-journal-section {
+  margin-top: 12px;
+}
+
+.schedule-journal-section .card {
+  border-left: 3px solid var(--accent);
+}
+
+.journal-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.journal-inline-header h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.journal-inline-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--white);
+  resize: vertical;
+}
+
+.journal-inline-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 105, 20, 0.1);
+}
+
+.journal-inline-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* ===== 악보 이미지 ===== */
+.sheet-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.sheet-header:active { background: var(--primary-bg); }
+
+.sheet-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sheet-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  color: var(--primary);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.sheet-card.open .sheet-toggle {
+  transform: rotate(180deg);
+}
+
+.sheet-image-wrap {
+  display: none;
+  padding: 0;
+}
+
+.sheet-card.open .sheet-image-wrap {
+  display: block;
+}
+
+.sheet-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

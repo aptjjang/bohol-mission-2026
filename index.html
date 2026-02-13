@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1E50B4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>2026 보홀 단기선교</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 스플래시 화면 -->
+  <div id="splash-screen">
+    <img src="images/team_photo.jpg" alt="2026 보홀 단기선교팀">
+  </div>
+
+  <!-- 헤더 -->
+  <header id="app-header">
+    <button id="btn-back" class="header-btn hidden" aria-label="뒤로가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 id="header-title">보홀 단기선교</h1>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- 메인 콘텐츠 영역 -->
+  <main id="app-content">
+
+    <!-- ===== 홈 화면 ===== -->
+    <section id="page-home" class="page active">
+      <div class="home-hero" id="home-hero-slide">
+        <h2 class="home-theme">아버지의 마음으로</h2>
+        <p class="home-theme-eng">with His Heart, into the Land</p>
+        <p class="home-verse">너희 안에 이 마음을 품으라<br>곧 그리스도 예수의 마음이니<br><span class="verse-ref">빌립보서 2:5</span></p>
+        <div class="home-period">
+          <span>2026.2.15(주) ~ 2.21(토)</span>
+          <span class="home-dest">필리핀 보홀</span>
+        </div>
+        <div id="home-countdown" class="home-countdown"></div>
+      </div>
+
+      <div class="home-menu-grid">
+        <button class="menu-card" data-page="info">
+          <span class="menu-icon">&#128214;</span>
+          <span class="menu-label">선교안내</span>
+        </button>
+        <button class="menu-card" data-page="team">
+          <span class="menu-icon">&#128101;</span>
+          <span class="menu-label">팀원정보</span>
+        </button>
+        <button class="menu-card" data-page="schedule">
+          <span class="menu-icon">&#128197;</span>
+          <span class="menu-label">일정표</span>
+        </button>
+        <button class="menu-card" data-page="checklist">
+          <span class="menu-icon">&#9989;</span>
+          <span class="menu-label">체크리스트</span>
+        </button>
+        <button class="menu-card" data-page="prayer">
+          <span class="menu-icon">&#128591;</span>
+          <span class="menu-label">기도제목</span>
+        </button>
+        <button class="menu-card" data-page="songs">
+          <span class="menu-icon">&#127925;</span>
+          <span class="menu-label">찬양</span>
+        </button>
+        <button class="menu-card" data-page="language">
+          <span class="menu-icon">&#128483;</span>
+          <span class="menu-label">현지어</span>
+        </button>
+        <button class="menu-card" data-page="gospel">
+          <span class="menu-icon">&#9766;</span>
+          <span class="menu-label">복음전도</span>
+        </button>
+        <button class="menu-card" data-page="eval">
+          <span class="menu-icon">&#128203;</span>
+          <span class="menu-label">선교평가</span>
+        </button>
+        <button class="menu-card" id="btn-install-app">
+          <span class="menu-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36">
+              <rect x="1" y="1" width="34" height="34" rx="7" fill="#1E50B4"/>
+              <rect x="15.5" y="6" width="5" height="24" rx="1" fill="#DC1E1E"/>
+              <rect x="6" y="15.5" width="24" height="5" rx="1" fill="#DC1E1E"/>
+            </svg>
+          </span>
+          <span class="menu-label">앱다운로드</span>
+        </button>
+      </div>
+
+      <div class="home-logo">
+        <img src="images/church_logo.png" alt="좋은나무교회 로고">
+      </div>
+    </section>
+
+    <!-- ===== 선교안내 ===== -->
+    <section id="page-info" class="page page-bg" data-bg="church">
+      <!-- 탭 네비게이션 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="info-purpose">목적</button>
+        <button class="tab-btn" data-tab="info-pledge">서약서</button>
+        <button class="tab-btn" data-tab="info-rules">사역원칙</button>
+        <button class="tab-btn" data-tab="info-caution">주의사항</button>
+        <button class="tab-btn" data-tab="info-bohol">보홀</button>
+        <button class="tab-btn" data-tab="info-contact">연락처</button>
+      </div>
+
+      <div id="info-purpose" class="tab-content active">
+        <div class="card">
+          <h3 class="card-title">선교의 목적</h3>
+          <p id="purpose-text" class="card-body"></p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">선교의 목표</h3>
+          <div id="goals-list"></div>
+        </div>
+      </div>
+
+      <div id="info-pledge" class="tab-content">
+        <div class="card">
+          <h3 class="card-title">선교 서약서</h3>
+          <p class="card-subtitle">복음을 전하고 하나님의 사랑을 실천하는 일에 다음과 같이 서약합니다.</p>
+          <div class="pledge-list">
+            <div class="pledge-item">
+              <h4>1. 복음 전파의 책임</h4>
+              <p>나는 선교지에서 하나님을 알지 못하는 사람들에게 예수 그리스도의 복음을 전하겠습니다. 말로 안되면 몸으로라도 예수님의 사랑을 실천함으로 복음전하는 일에 최선을 다하겠습니다.</p>
+            </div>
+            <div class="pledge-item">
+              <h4>2. 배우고 성장하는 자세</h4>
+              <p>나는 선교지의 문화와 사람들을 이해하고 배우겠습니다. 교만하지 않고 겸손하게 나의 생각과 행동이 예수님을 닮아가도록 배우는 자세로 임하겠습니다.</p>
+            </div>
+            <div class="pledge-item">
+              <h4>3. 감사와 사랑의 실천</h4>
+              <p>한국과 다른 선교지의 현실에 불평이나 원망보다는 배려와 감사를 먼저 말하고 행동하겠습니다. 어려움에 처한 사람을 모른척 하지 않고, 먼저 손을 내밀고 도와주며, 예수님의 이름으로 기도하겠습니다.</p>
+            </div>
+            <div class="pledge-item">
+              <h4>4. 하나된 마음과 공동체의 유익</h4>
+              <p>나와 특별한 관계로 인해 공동체의 하나됨이 깨어지지 않도록 노력하겠습니다. 주어진 팀별 활동에 최선을 다하며, 서로 돕고 돕는 선교팀이 되겠습니다.</p>
+            </div>
+          </div>
+          <div class="pledge-footer">
+            <p>2026 보홀 단기선교 기간 동안 하나님을 경외하는 마음으로<br>위의 사항을 성실하고 충성되게 지킬 것을 엄숙히 서약합니다.</p>
+            <p class="pledge-date">2026년 2월 15일<br>좋은나무교회 파송 선교사</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="info-rules" class="tab-content">
+        <div class="card">
+          <h3 class="card-title">선교지에 도착하면</h3>
+          <ul id="rules-arrival" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">사역원칙</h3>
+          <ul id="rules-ministry" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">생활규칙</h3>
+          <ul id="rules-life" class="rule-list"></ul>
+        </div>
+      </div>
+
+      <div id="info-caution" class="tab-content">
+        <div class="card">
+          <h3 class="card-title">공항에서</h3>
+          <ul id="caution-airport" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">선교활동 할 때</h3>
+          <ul id="caution-activity" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">일반적인 내용</h3>
+          <ul id="caution-general" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">음식 및 건강</h3>
+          <ul id="caution-food" class="rule-list"></ul>
+        </div>
+        <div class="card">
+          <h3 class="card-title">팀 안에서</h3>
+          <ul id="caution-team" class="rule-list"></ul>
+        </div>
+      </div>
+
+      <div id="info-bohol" class="tab-content">
+        <div class="bohol-hero" style="background-image:url('images/bg/bohol_hills.jpg')">
+          <div class="bohol-hero-overlay">
+            <h2>BOHOL</h2>
+            <p>필리핀의 숨은 보석</p>
+          </div>
+        </div>
+        <div class="card">
+          <h3 class="card-title">About BOHOL</h3>
+          <p id="bohol-text" class="card-body"></p>
+        </div>
+        <div class="bohol-gallery">
+          <div class="bohol-photo" style="background-image:url('images/bg/bohol_beach.jpg')">
+            <span>Bohol Beach</span>
+          </div>
+          <div class="bohol-photo" style="background-image:url('images/bg/bohol_hills.jpg')">
+            <span>Chocolate Hills</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="info-contact" class="tab-content">
+        <div id="contact-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== 팀원 정보 ===== -->
+    <section id="page-team" class="page page-bg" data-bg="cross">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="team-list">명단</button>
+        <button class="tab-btn" data-tab="team-org">조직</button>
+        <button class="tab-btn" data-tab="team-ministry">팀사역</button>
+        <button class="tab-btn" data-tab="team-room">숙소</button>
+      </div>
+
+      <div id="team-list" class="tab-content active">
+        <div class="member-filter">
+          <button class="filter-btn active" data-filter="all">전체</button>
+          <button class="filter-btn" data-filter="M">남</button>
+          <button class="filter-btn" data-filter="F">여</button>
+        </div>
+        <div id="member-cards"></div>
+      </div>
+
+      <div id="team-org" class="tab-content">
+        <div id="org-list"></div>
+      </div>
+
+      <div id="team-ministry" class="tab-content">
+        <div id="ministry-teams"></div>
+      </div>
+
+      <div id="team-room" class="tab-content">
+        <div id="room-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== 일정표 ===== -->
+    <section id="page-schedule" class="page page-bg" data-bg="beach">
+      <div class="schedule-tabs">
+        <button class="schedule-day-btn active" data-day="overview">한눈에 보기</button>
+        <button class="schedule-day-btn" data-day="1">1일차</button>
+        <button class="schedule-day-btn" data-day="2">2일차</button>
+        <button class="schedule-day-btn" data-day="3">3일차</button>
+        <button class="schedule-day-btn" data-day="4">4일차</button>
+        <button class="schedule-day-btn" data-day="5">5일차</button>
+        <button class="schedule-day-btn" data-day="6">6일차</button>
+        <button class="schedule-day-btn" data-day="7">7일차</button>
+      </div>
+      <div id="schedule-content"></div>
+    </section>
+
+    <!-- ===== 체크리스트 ===== -->
+    <section id="page-checklist" class="page">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="cl-personal">개인 체크리스트</button>
+        <button class="tab-btn" data-tab="cl-supplies">준비물 목록</button>
+      </div>
+
+      <div id="cl-personal" class="tab-content active">
+        <div class="checklist-progress" id="progress-personal"></div>
+        <div id="checklist-personal" class="checklist-items"></div>
+      </div>
+
+      <div id="cl-supplies" class="tab-content">
+        <div id="supplies-view"></div>
+      </div>
+
+      <div class="checklist-note">
+        <p><strong>위탁수화물</strong> 15kg 이하 / <strong>기내수화물</strong> 10kg 이하</p>
+        <p>보조배터리는 기내로 / 액체용품 100ml 이하</p>
+      </div>
+    </section>
+
+    <!-- ===== 기도제목 ===== -->
+    <section id="page-prayer" class="page page-bg" data-bg="prayer">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="prayer-common">공통기도</button>
+        <button class="tab-btn" data-tab="prayer-personal">개인기도</button>
+        <button class="tab-btn" data-tab="prayer-daily">일별기도</button>
+      </div>
+
+      <div id="prayer-common" class="tab-content active">
+        <div id="prayer-list"></div>
+      </div>
+
+      <div id="prayer-personal" class="tab-content">
+        <div class="card">
+          <h3 class="card-title">나의 기도제목</h3>
+          <textarea id="personal-prayer-input" class="text-input" placeholder="개인 기도제목을 작성하세요..." rows="4"></textarea>
+          <button id="btn-save-prayer" class="btn-primary">저장</button>
+        </div>
+        <div id="saved-prayers"></div>
+      </div>
+
+      <div id="prayer-daily" class="tab-content">
+        <p class="section-desc">하루 1번 이상 공통기도를 가지고 기도합니다.</p>
+        <div id="daily-prayer-check"></div>
+      </div>
+    </section>
+
+    <!-- ===== 찬양 ===== -->
+    <section id="page-songs" class="page page-bg" data-bg="church">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="songs-lyrics">영어찬양</button>
+        <button class="tab-btn" data-tab="songs-sheets">악보</button>
+      </div>
+      <div id="songs-lyrics" class="tab-content active">
+        <div id="songs-list"></div>
+      </div>
+      <div id="songs-sheets" class="tab-content">
+        <div id="sheets-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== 현지어 ===== -->
+    <section id="page-language" class="page page-bg" data-bg="hills">
+      <div class="card">
+        <h3 class="card-title">비사야어 (세부아노어) 배우기</h3>
+        <p class="card-subtitle">보홀 현지에서 사용하는 기본 표현들</p>
+      </div>
+      <div id="language-table"></div>
+      <div class="card" style="margin-top:12px">
+        <h3 class="card-title">&#127463; 현지어로 말하기</h3>
+        <p class="card-subtitle">한국어 또는 영어를 입력하면 세부아노어로 번역됩니다</p>
+        <div class="translate-input-wrap">
+          <input type="text" id="translate-input" class="text-input" placeholder="번역할 말을 입력하세요 (예: 감사합니다, Thank you)">
+          <button id="btn-translate" class="btn-primary">번역</button>
+        </div>
+        <div id="translate-result" class="translate-result hidden"></div>
+        <div id="translate-history" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- ===== 복음전도 ===== -->
+    <section id="page-gospel" class="page page-bg" data-bg="cross">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="gospel-share">복음전도</button>
+        <button class="tab-btn" data-tab="gospel-creed">사도신경</button>
+        <button class="tab-btn" data-tab="gospel-prayer">주기도문</button>
+      </div>
+
+      <div id="gospel-share" class="tab-content active">
+        <div class="card">
+          <h3 class="card-title">20일 복음전도 프로그램</h3>
+          <p class="card-subtitle">클릭하면 영어 발음을 들을 수 있습니다</p>
+          <div id="gospel-steps"></div>
+        </div>
+      </div>
+
+      <div id="gospel-creed" class="tab-content">
+        <div class="card">
+          <h3 class="card-title scripture-tts-title" id="btn-creed-tts">
+            The Apostles' Creed
+            <button class="tts-btn tts-btn-lg" aria-label="발음 듣기">&#128266;</button>
+          </h3>
+          <p class="card-subtitle">제목을 클릭하면 원어민 발음을 들을 수 있습니다</p>
+          <pre id="creed-text" class="scripture-text"></pre>
+        </div>
+      </div>
+
+      <div id="gospel-prayer" class="tab-content">
+        <div class="card">
+          <h3 class="card-title scripture-tts-title" id="btn-prayer-tts">
+            The Lord's Prayer
+            <button class="tts-btn tts-btn-lg" aria-label="발음 듣기">&#128266;</button>
+          </h3>
+          <p class="card-subtitle">제목을 클릭하면 원어민 발음을 들을 수 있습니다</p>
+          <pre id="lords-prayer-text" class="scripture-text"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- 선교일지는 일정표에 통합됨 -->
+
+    <!-- ===== 선교평가서 ===== -->
+    <section id="page-eval" class="page page-bg" data-bg="prayer">
+      <div class="card">
+        <h3 class="card-title">선교평가서</h3>
+        <p class="card-subtitle">2026 BOHOL 단기선교를 돌아보며</p>
+      </div>
+      <div id="eval-form"></div>
+      <div class="eval-actions">
+        <button id="btn-save-eval" class="btn-primary">평가서 저장</button>
+        <span id="eval-save-status" class="save-status"></span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 하단 네비게이션 -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-page="home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>홈</span>
+    </button>
+    <button class="nav-item" data-page="schedule">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      <span>일정</span>
+    </button>
+    <button class="nav-item" data-page="team">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span>팀원</span>
+    </button>
+    <button class="nav-item" data-page="songs">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+      <span>찬양</span>
+    </button>
+    <button class="nav-item" data-page="more">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      <span>더보기</span>
+    </button>
+  </nav>
+
+  <!-- 더보기 메뉴 (오버레이) -->
+  <div id="more-menu" class="more-menu hidden">
+    <div class="more-menu-overlay"></div>
+    <div class="more-menu-content">
+      <h3>더보기</h3>
+      <button class="more-item" data-page="checklist">
+        <span class="more-icon">&#9989;</span> 체크리스트
+      </button>
+      <button class="more-item" data-page="prayer">
+        <span class="more-icon">&#128591;</span> 기도제목
+      </button>
+      <button class="more-item" data-page="language">
+        <span class="more-icon">&#128483;</span> 현지어 가이드
+      </button>
+      <button class="more-item" data-page="gospel">
+        <span class="more-icon">&#9766;</span> 복음전도
+      </button>
+      <button class="more-item" data-page="schedule">
+        <span class="more-icon">&#128221;</span> 선교일지
+      </button>
+      <button class="more-item" data-page="eval">
+        <span class="more-icon">&#128203;</span> 선교평가
+      </button>
+      <button class="more-item" data-page="info">
+        <span class="more-icon">&#128214;</span> 선교안내
+      </button>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
