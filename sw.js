@@ -1,9 +1,10 @@
-const CACHE_NAME = 'mission-2026-v17';
+const CACHE_NAME = 'mission-2026-v19';
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
   './js/data.js',
+  './js/album_data.js',
   './js/storage.js',
   './js/app.js',
   './manifest.json',
