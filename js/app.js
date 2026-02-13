@@ -556,11 +556,15 @@ const App = {
           <span class="album-gallery-count">${albumPhotos.length}장</span>
         </div>
         <div class="album-grid">
-          ${albumPhotos.map((photo, idx) =>
-            `<div class="album-thumb" data-day="${dayNum}" data-idx="${idx}">
-              <img src="images/albums/day${dayNum}/${photo}" alt="사진 ${idx + 1}" loading="lazy">
-            </div>`
-          ).join('')}
+          ${albumPhotos.map((file, idx) => {
+            const isVideo = file.endsWith('.mp4');
+            const src = `images/albums/day${dayNum}/${file}`;
+            return `<div class="album-thumb ${isVideo ? 'album-thumb-video' : ''}" data-day="${dayNum}" data-idx="${idx}">
+              ${isVideo
+                ? `<video src="${src}" muted preload="metadata"></video><span class="album-play-icon">&#9654;</span>`
+                : `<img src="${src}" alt="사진 ${idx + 1}" loading="lazy">`}
+            </div>`;
+          }).join('')}
         </div>
       </div>` : ''}
 
@@ -632,26 +636,50 @@ const App = {
 
   // ===== 사진첩 전체화면 뷰어 =====
   openAlbumViewer(day, startIdx) {
-    const photos = AlbumData[day];
-    if (!photos || !photos.length) return;
+    const files = AlbumData[day];
+    if (!files || !files.length) return;
 
     const viewer = document.getElementById('album-viewer');
     const img = document.getElementById('album-viewer-image');
     const counter = document.getElementById('album-viewer-counter');
     let currentIdx = startIdx;
+    let currentVideo = null;
 
     const show = (idx) => {
       currentIdx = idx;
-      img.src = 'images/albums/day' + day + '/' + photos[idx];
-      counter.textContent = (idx + 1) + ' / ' + photos.length;
+      const file = files[idx];
+      const src = 'images/albums/day' + day + '/' + file;
+      const isVideo = file.endsWith('.mp4');
+
+      // 이전 영상 제거
+      if (currentVideo) {
+        currentVideo.pause();
+        currentVideo.remove();
+        currentVideo = null;
+      }
+
+      if (isVideo) {
+        img.style.display = 'none';
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain';
+        viewer.insertBefore(video, viewer.firstChild);
+        currentVideo = video;
+      } else {
+        img.style.display = '';
+        img.src = src;
+      }
+      counter.textContent = (idx + 1) + ' / ' + files.length;
     };
 
     show(startIdx);
     viewer.classList.remove('hidden');
 
-    // 이벤트 핸들러 (클린업 위해 저장)
-    const onPrev = (e) => { e.stopPropagation(); show(currentIdx > 0 ? currentIdx - 1 : photos.length - 1); };
-    const onNext = (e) => { e.stopPropagation(); show(currentIdx < photos.length - 1 ? currentIdx + 1 : 0); };
+    const onPrev = (e) => { e.stopPropagation(); show(currentIdx > 0 ? currentIdx - 1 : files.length - 1); };
+    const onNext = (e) => { e.stopPropagation(); show(currentIdx < files.length - 1 ? currentIdx + 1 : 0); };
     const onClose = () => { cleanup(); };
     const onKey = (e) => {
       if (e.key === 'ArrowLeft') onPrev(e);
@@ -668,7 +696,6 @@ const App = {
     closeBtn.addEventListener('click', onClose);
     document.addEventListener('keydown', onKey);
 
-    // 스와이프 지원
     let touchStartX = 0;
     const onTouchStart = (e) => { touchStartX = e.touches[0].clientX; };
     const onTouchEnd = (e) => {
@@ -681,6 +708,8 @@ const App = {
     viewer.addEventListener('touchend', onTouchEnd);
 
     const cleanup = () => {
+      if (currentVideo) { currentVideo.pause(); currentVideo.remove(); currentVideo = null; }
+      img.style.display = '';
       viewer.classList.add('hidden');
       prevBtn.removeEventListener('click', onPrev);
       nextBtn.removeEventListener('click', onNext);
@@ -690,7 +719,6 @@ const App = {
       viewer.removeEventListener('touchend', onTouchEnd);
     };
 
-    // 뒤로가기로 닫기 가능하도록
     this._albumViewerCleanup = cleanup;
   },
 
