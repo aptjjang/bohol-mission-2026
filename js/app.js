@@ -88,6 +88,14 @@ const App = {
     history.replaceState({ page: 'home' }, '', '');
 
     window.addEventListener('popstate', (e) => {
+      // 앨범 뷰어 열려있으면 먼저 닫기
+      const albumViewer = document.getElementById('album-viewer');
+      if (albumViewer && !albumViewer.classList.contains('hidden')) {
+        if (this._albumViewerCleanup) this._albumViewerCleanup();
+        history.pushState({ page: this.currentPage }, '', '');
+        return;
+      }
+
       // PPT 슬라이드쇼 열려있으면 먼저 닫기
       const viewer = document.getElementById('ppt-viewer');
       if (viewer && !viewer.classList.contains('hidden')) {
@@ -516,6 +524,10 @@ const App = {
     const currentDay = now >= start ? Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1 : -1;
     const isToday = schedule.day === currentDay;
 
+    // 앨범 데이터 확인
+    const albumPhotos = (typeof AlbumData !== 'undefined' && AlbumData[dayNum]) ? AlbumData[dayNum] : [];
+    const hasPhotos = albumPhotos.length > 0;
+
     // 일지 데이터 불러오기
     const journalData = Storage.getJournal(dayNum);
 
@@ -527,6 +539,7 @@ const App = {
             <h3>${schedule.title}</h3>
             <span>${schedule.date}</span>
           </div>
+          ${hasPhotos ? `<button class="album-btn" id="btn-album-${dayNum}">&#128247; 사진 <span class="album-count">${albumPhotos.length}</span></button>` : ''}
         </div>
         ${schedule.events.map(e =>
           `<div class="event-item">
@@ -535,6 +548,21 @@ const App = {
           </div>`
         ).join('')}
       </div>
+
+      ${hasPhotos ? `
+      <div class="album-gallery" id="album-gallery-${dayNum}">
+        <div class="album-gallery-header">
+          <h4>&#128247; ${schedule.day}일차 사진첩</h4>
+          <span class="album-gallery-count">${albumPhotos.length}장</span>
+        </div>
+        <div class="album-grid">
+          ${albumPhotos.map((photo, idx) =>
+            `<div class="album-thumb" data-day="${dayNum}" data-idx="${idx}">
+              <img src="images/albums/day${dayNum}/${photo}" alt="사진 ${idx + 1}" loading="lazy">
+            </div>`
+          ).join('')}
+        </div>
+      </div>` : ''}
 
       <div class="schedule-journal-section">
         <div class="card">
@@ -579,6 +607,91 @@ const App = {
       autoSaveTimer = setTimeout(saveJournal, 3000);
     });
     weatherSel.addEventListener('change', saveJournal);
+
+    // 사진 버튼 → 갤러리로 스크롤
+    if (hasPhotos) {
+      const albumBtn = document.getElementById('btn-album-' + dayNum);
+      const galleryEl = document.getElementById('album-gallery-' + dayNum);
+      if (albumBtn && galleryEl) {
+        albumBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          galleryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+
+      // 그리드 썸네일 클릭 → 전체화면 뷰어
+      container.querySelectorAll('.album-thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+          const day = parseInt(thumb.dataset.day);
+          const idx = parseInt(thumb.dataset.idx);
+          this.openAlbumViewer(day, idx);
+        });
+      });
+    }
+  },
+
+  // ===== 사진첩 전체화면 뷰어 =====
+  openAlbumViewer(day, startIdx) {
+    const photos = AlbumData[day];
+    if (!photos || !photos.length) return;
+
+    const viewer = document.getElementById('album-viewer');
+    const img = document.getElementById('album-viewer-image');
+    const counter = document.getElementById('album-viewer-counter');
+    let currentIdx = startIdx;
+
+    const show = (idx) => {
+      currentIdx = idx;
+      img.src = 'images/albums/day' + day + '/' + photos[idx];
+      counter.textContent = (idx + 1) + ' / ' + photos.length;
+    };
+
+    show(startIdx);
+    viewer.classList.remove('hidden');
+
+    // 이벤트 핸들러 (클린업 위해 저장)
+    const onPrev = (e) => { e.stopPropagation(); show(currentIdx > 0 ? currentIdx - 1 : photos.length - 1); };
+    const onNext = (e) => { e.stopPropagation(); show(currentIdx < photos.length - 1 ? currentIdx + 1 : 0); };
+    const onClose = () => { cleanup(); };
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') onPrev(e);
+      else if (e.key === 'ArrowRight') onNext(e);
+      else if (e.key === 'Escape') cleanup();
+    };
+
+    const prevBtn = document.getElementById('album-viewer-prev');
+    const nextBtn = document.getElementById('album-viewer-next');
+    const closeBtn = document.getElementById('album-viewer-close');
+
+    prevBtn.addEventListener('click', onPrev);
+    nextBtn.addEventListener('click', onNext);
+    closeBtn.addEventListener('click', onClose);
+    document.addEventListener('keydown', onKey);
+
+    // 스와이프 지원
+    let touchStartX = 0;
+    const onTouchStart = (e) => { touchStartX = e.touches[0].clientX; };
+    const onTouchEnd = (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) onNext(e); else onPrev(e);
+      }
+    };
+    viewer.addEventListener('touchstart', onTouchStart);
+    viewer.addEventListener('touchend', onTouchEnd);
+
+    const cleanup = () => {
+      viewer.classList.add('hidden');
+      prevBtn.removeEventListener('click', onPrev);
+      nextBtn.removeEventListener('click', onNext);
+      closeBtn.removeEventListener('click', onClose);
+      document.removeEventListener('keydown', onKey);
+      viewer.removeEventListener('touchstart', onTouchStart);
+      viewer.removeEventListener('touchend', onTouchEnd);
+    };
+
+    // 뒤로가기로 닫기 가능하도록
+    this._albumViewerCleanup = cleanup;
   },
 
   // ===== 체크리스트 (개인용품만 체크박스 + 나머지는 목록) =====
