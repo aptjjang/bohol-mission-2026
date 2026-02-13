@@ -61,8 +61,15 @@ const App = {
     const btn = document.getElementById('btn-install-app');
     if (!btn) return;
 
+    // 이미 홈화면에서 실행 중이면 버튼 숨김
+    if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+      btn.querySelector('.menu-label').textContent = '설치완료!';
+      btn.style.opacity = '0.5';
+      return;
+    }
+
     btn.addEventListener('click', async () => {
-      // PWA 설치 프롬프트가 준비된 경우 → 바로 실행
+      // Android/Chrome: PWA 설치 프롬프트
       if (deferredInstallPrompt) {
         deferredInstallPrompt.prompt();
         const result = await deferredInstallPrompt.userChoice;
@@ -70,7 +77,14 @@ const App = {
         return;
       }
 
-      // 프롬프트가 아직 안 뜬 경우 → 대기 등록, 준비되면 자동 실행
+      // iOS 감지: Safari "홈 화면에 추가" 안내
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (isIOS) {
+        this.showIOSInstallGuide();
+        return;
+      }
+
+      // 그 외: 대기 등록
       installPending = true;
       btn.querySelector('.menu-label').textContent = '설치 준비중...';
       setTimeout(() => {
@@ -80,6 +94,46 @@ const App = {
         }
       }, 10000);
     });
+  },
+
+  // ===== iOS 앱 설치 안내 =====
+  showIOSInstallGuide() {
+    const existing = document.getElementById('ios-install-guide');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ios-install-guide';
+    overlay.className = 'ios-install-overlay';
+    overlay.innerHTML = `
+      <div class="ios-install-content">
+        <h3>iPhone에 앱 설치하기</h3>
+        <div class="ios-install-steps">
+          <div class="ios-step">
+            <span class="ios-step-num">1</span>
+            <span>하단의 <strong>공유 버튼</strong>을 누르세요</span>
+            <span class="ios-share-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#007AFF" stroke-width="1.8">
+                <path d="M10 2v11M6 6l4-4 4 4M4 11v5a2 2 0 002 2h8a2 2 0 002-2v-5"/>
+              </svg>
+            </span>
+          </div>
+          <div class="ios-step">
+            <span class="ios-step-num">2</span>
+            <span><strong>홈 화면에 추가</strong>를 선택하세요</span>
+            <span class="ios-add-icon">+</span>
+          </div>
+          <div class="ios-step">
+            <span class="ios-step-num">3</span>
+            <span>오른쪽 상단 <strong>추가</strong>를 누르면 완료!</span>
+          </div>
+        </div>
+        <button class="btn-primary ios-install-close">확인</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    overlay.querySelector('.ios-install-close').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
   },
 
   // ===== 뒤로가기 (Android 하드웨어/제스처) =====
