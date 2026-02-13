@@ -205,29 +205,34 @@ const App = {
     this.setupHeroSlideshow();
   },
 
-  // ===== 히어로 슬라이드쇼 (PPT) =====
+  // ===== 전체화면 PPT 슬라이드쇼 =====
   setupHeroSlideshow() {
     const hero = document.getElementById('home-hero-slide');
-    if (!hero) return;
+    const viewer = document.getElementById('ppt-viewer');
+    const img = document.getElementById('ppt-image');
+    const counter = document.getElementById('ppt-counter');
+    if (!hero || !viewer) return;
 
     const totalSlides = 10;
-    let currentSlide = 0; // 0 = 홈 화면, 1~10 = 슬라이드
+    let currentSlide = 0;
 
     hero.style.cursor = 'pointer';
     hero.addEventListener('click', () => {
+      currentSlide = 1;
+      img.src = 'images/ppt/slide_1.png';
+      counter.textContent = '1 / ' + totalSlides;
+      viewer.classList.remove('hidden');
+    });
+
+    viewer.addEventListener('click', () => {
       currentSlide++;
       if (currentSlide > totalSlides) {
-        // 마지막 슬라이드 → 홈으로 복귀
         currentSlide = 0;
-        hero.classList.remove('hero-slideshow');
-        hero.style.backgroundImage = '';
-        hero.querySelectorAll('.home-theme, .home-theme-eng, .home-verse, .home-period, .home-countdown').forEach(el => el.style.display = '');
+        viewer.classList.add('hidden');
         return;
       }
-      // 슬라이드 표시
-      hero.classList.add('hero-slideshow');
-      hero.style.backgroundImage = 'url(images/ppt/slide_' + currentSlide + '.png)';
-      hero.querySelectorAll('.home-theme, .home-theme-eng, .home-verse, .home-period, .home-countdown').forEach(el => el.style.display = 'none');
+      img.src = 'images/ppt/slide_' + currentSlide + '.png';
+      counter.textContent = currentSlide + ' / ' + totalSlides;
     });
   },
 

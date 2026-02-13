@@ -139,14 +139,36 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-.home-hero.hero-slideshow {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: #000;
-  min-height: 220px;
-  padding: 0;
-  aspect-ratio: 16 / 9;
+/* ===== 전체화면 PPT 슬라이드쇼 ===== */
+.ppt-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ppt-viewer.hidden { display: none; }
+
+.ppt-viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.ppt-counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  background: rgba(0,0,0,0.5);
+  padding: 4px 14px;
+  border-radius: 12px;
 }
 
 .home-cross {
