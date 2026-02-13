@@ -42,6 +42,7 @@ const App = {
     this.setupNavigation();
     this.setupMoreMenu();
     this.setupInstallButton();
+    this.setupBackButton();
     this.renderHome();
     this.renderInfo();
     this.renderTeam();
@@ -78,6 +79,40 @@ const App = {
           btn.querySelector('.menu-label').textContent = '앱다운로드';
         }
       }, 10000);
+    });
+  },
+
+  // ===== 뒤로가기 (Android 하드웨어/제스처) =====
+  setupBackButton() {
+    // 초기 홈 상태 등록
+    history.replaceState({ page: 'home' }, '', '');
+
+    window.addEventListener('popstate', (e) => {
+      // PPT 슬라이드쇼 열려있으면 먼저 닫기
+      const viewer = document.getElementById('ppt-viewer');
+      if (viewer && !viewer.classList.contains('hidden')) {
+        viewer.classList.add('hidden');
+        history.pushState({ page: this.currentPage }, '', '');
+        return;
+      }
+
+      // 더보기 메뉴 열려있으면 닫기
+      const moreMenu = document.getElementById('more-menu');
+      if (moreMenu && !moreMenu.classList.contains('hidden')) {
+        moreMenu.classList.add('hidden');
+        history.pushState({ page: this.currentPage }, '', '');
+        return;
+      }
+
+      // 홈이 아니면 홈으로 이동
+      if (this.currentPage !== 'home') {
+        this.navigateTo('home', '보홀 단기선교', true);
+        history.pushState({ page: 'home' }, '', '');
+        return;
+      }
+
+      // 홈에서 뒤로가기 → 앱 종료 방지 (한번 더 누르면 종료)
+      history.pushState({ page: 'home' }, '', '');
     });
   },
 
@@ -166,7 +201,7 @@ const App = {
     });
   },
 
-  navigateTo(page, title) {
+  navigateTo(page, title, fromPopState) {
     this.currentPage = page;
 
     // 페이지 전환
@@ -186,6 +221,11 @@ const App = {
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.page === page);
     });
+
+    // 히스토리 추가 (popstate에서 호출된 게 아닐 때만)
+    if (!fromPopState) {
+      history.pushState({ page: page }, '', '');
+    }
 
     // 스크롤 위로
     window.scrollTo(0, 0);
