@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mission-2026-v16';
+const CACHE_NAME = 'mission-2026-v17';
 const urlsToCache = [
   './',
   './index.html',
@@ -24,8 +24,6 @@ const urlsToCache = [
   './images/ppt/slide_6.png',
   './images/ppt/slide_7.png',
   './images/ppt/slide_8.png',
-  './images/ppt/slide_9.png',
-  './images/ppt/slide_10.png',
   './images/songs/song_1.png',
   './images/songs/song_2.png',
   './images/songs/song_3.png',

@@ -253,7 +253,7 @@ const App = {
     const counter = document.getElementById('ppt-counter');
     if (!hero || !viewer) return;
 
-    const totalSlides = 10;
+    const totalSlides = 8;
     let currentSlide = 0;
 
     hero.style.cursor = 'pointer';
