@@ -934,6 +934,20 @@ const App = {
       </div>`
     ).join('');
 
+    // GRACE 은혜 (이미지 악보 카드)
+    lyricsContainer.insertAdjacentHTML('beforeend', `
+      <div class="song-card" data-song="grace">
+        <div class="song-header">
+          <span class="song-title">GRACE 은혜</span>
+          <span class="song-toggle">&#9660;</span>
+        </div>
+        <div class="song-lyrics song-lyrics-images">
+          <img src="images/songs/grace1.jpg" alt="GRACE 은혜 1" loading="lazy">
+          <img src="images/songs/grace2.jpg" alt="GRACE 은혜 2" loading="lazy">
+        </div>
+      </div>
+    `);
+
     lyricsContainer.querySelectorAll('.song-header').forEach(header => {
       header.addEventListener('click', () => {
         header.parentElement.classList.toggle('open');
@@ -954,7 +968,7 @@ const App = {
       { title: '선교찬양 9 - 주님 다시 오실 때까지', file: 'song_9.png' },
       { title: '선교찬양 10 - 하나님 아버지의 마음', file: 'song_10.png' },
       { title: '선교찬양 11 - 주 발 앞에 나 엎드려 (One Way)', file: 'song_11.png' },
-      { title: '선교찬양 12 - 은혜', file: 'song_12.png' },
+      { title: '선교찬양 12 - 은혜', file: 'song_12.jpg' },
       { title: '선교 주제가 - 주 다스리시네', file: 'song_theme2.png' }
     ];
 

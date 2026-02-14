@@ -1013,6 +1013,16 @@ body {
   display: block;
 }
 
+.song-lyrics-images {
+  padding: 0;
+}
+
+.song-lyrics-images img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* ===== 현지어 ===== */
 .lang-row {
   display: grid;
