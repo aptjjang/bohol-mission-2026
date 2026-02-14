@@ -1078,25 +1078,27 @@ const App = {
     }
   },
 
-  // 세부아노어 발음 생성 (번역 결과용) - 브라우저 SpeechSynthesis 사용
-  speakCebuanoEL(text, btn) {
-    if (!('speechSynthesis' in window)) return;
+  // ElevenLabs TTS로 세부아노어 발음 생성 (번역 결과용)
+  async speakCebuanoEL(text, btn) {
     if (btn) btn.classList.add('speaking');
     const done = () => { if (btn) btn.classList.remove('speaking'); };
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    // 세부아노어에 가장 가까운 음성 찾기: fil(필리핀어) > tl > en
-    const voices = window.speechSynthesis.getVoices();
-    const filVoice = voices.find(v => v.lang.startsWith('fil')) ||
-                     voices.find(v => v.lang.startsWith('tl')) ||
-                     voices.find(v => v.lang.startsWith('en'));
-    if (filVoice) utterance.voice = filVoice;
-    utterance.lang = 'fil-PH';
-    utterance.rate = 0.85;
-    utterance.pitch = 1.0;
-    utterance.onend = done;
-    utterance.onerror = done;
-    window.speechSynthesis.speak(utterance);
+    try {
+      const res = await fetch('https://bohol-mission-2026.netlify.app/.netlify/functions/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.playbackRate = 0.9;
+      audio.onended = () => { done(); URL.revokeObjectURL(url); };
+      audio.onerror = done;
+      audio.play().catch(done);
+    } catch (e) {
+      done();
+    }
   },
 
   // 세부아노어 녹음 클립 재생 (인덱스 0~10)

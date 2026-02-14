@@ -1,12 +1,22 @@
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: CORS_HEADERS, body: '' };
+  }
+
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers: CORS_HEADERS, body: 'Method Not Allowed' };
   }
 
   try {
     const { text } = JSON.parse(event.body);
     if (!text || text.length > 500) {
-      return { statusCode: 400, body: 'Invalid text' };
+      return { statusCode: 400, headers: CORS_HEADERS, body: 'Invalid text' };
     }
 
     const response = await fetch(
@@ -26,7 +36,7 @@ exports.handler = async (event) => {
     );
 
     if (!response.ok) {
-      return { statusCode: response.status, body: 'TTS generation failed' };
+      return { statusCode: response.status, headers: CORS_HEADERS, body: 'TTS generation failed' };
     }
 
     const audioBuffer = await response.arrayBuffer();
@@ -34,11 +44,11 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'audio/mpeg' },
+      headers: { ...CORS_HEADERS, 'Content-Type': 'audio/mpeg' },
       body: base64Audio,
       isBase64Encoded: true
     };
   } catch (e) {
-    return { statusCode: 500, body: 'Server error' };
+    return { statusCode: 500, headers: CORS_HEADERS, body: 'Server error' };
   }
 };
