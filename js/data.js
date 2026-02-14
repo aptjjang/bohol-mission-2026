@@ -105,7 +105,7 @@ const MissionData = {
       day: 2, date: "2/16(월)", title: "선교지 도착 · 마을사역",
       events: [
         { time: "01:00", desc: "세부 도착" },
-        { time: "03:00", desc: "숙소 도착 (놀러와풀빌라)" },
+        { time: "03:00", desc: "숙소 도착 (9번가빌라)" },
         { time: "09:00", desc: "항구로 이동" },
         { time: "11:45", desc: "여객선 탑승" },
         { time: "13:00", desc: "보홀 도착 (점심식사 후)" },

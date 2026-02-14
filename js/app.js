@@ -526,7 +526,7 @@ const App = {
     if (dayFilter === 'overview') {
       const overviewData = [
         { day: '15(주)', am: '주일예배\n선교사 파송식', pm: '버스 출발(14시)\n부산 이동', eve: '부산공항\n출국(21:30)' },
-        { day: '16(월)', am: '세부 도착(1am)\n숙소(놀러와풀빌라)\n항구이동·여객선', pm: '보홀 도착(13시)\n장보기·짐정리', eve: '헤너노캄\n마을회관 사역' },
+        { day: '16(월)', am: '세부 도착(1am)\n숙소(9번가빌라)\n항구이동·여객선', pm: '보홀 도착(13시)\n장보기·짐정리', eve: '헤너노캄\n마을회관 사역' },
         { day: '17(화)', am: '따나완\n학교사역', pm: '따나완 지교회\n가정심방(13가정)', eve: '투비곤 공원사역\nK-Food 식사' },
         { day: '18(수)', am: '일리안소울\n학교사역', pm: '일리안소울\n지교회(6가정)', eve: '주민초청\n전도집회' },
         { day: '19(목)', am: '리더와 함께\nM.T(칼라페)', pm: '현지 체험\nBBQ', eve: 'Korean Food\nContest' },
@@ -805,6 +805,10 @@ const App = {
         </div>
       </div>`
     ).join('');
+
+    suppliesView.querySelectorAll('.supply-tag').forEach(tag => {
+      tag.addEventListener('click', () => tag.classList.toggle('tapped'));
+    });
   },
 
   renderChecklistCategory(cat) {
@@ -1060,27 +1064,25 @@ const App = {
     }
   },
 
-  // ElevenLabs TTS로 세부아노어 발음 생성 (번역 결과용)
-  async speakCebuanoEL(text, btn) {
+  // 세부아노어 발음 생성 (번역 결과용) - 브라우저 SpeechSynthesis 사용
+  speakCebuanoEL(text, btn) {
+    if (!('speechSynthesis' in window)) return;
     if (btn) btn.classList.add('speaking');
     const done = () => { if (btn) btn.classList.remove('speaking'); };
-    try {
-      const res = await fetch('/.netlify/functions/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-      if (!res.ok) throw new Error('TTS failed');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.playbackRate = 0.9;
-      audio.onended = () => { done(); URL.revokeObjectURL(url); };
-      audio.onerror = done;
-      audio.play().catch(done);
-    } catch (e) {
-      done();
-    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    // 세부아노어에 가장 가까운 음성 찾기: fil(필리핀어) > tl > en
+    const voices = window.speechSynthesis.getVoices();
+    const filVoice = voices.find(v => v.lang.startsWith('fil')) ||
+                     voices.find(v => v.lang.startsWith('tl')) ||
+                     voices.find(v => v.lang.startsWith('en'));
+    if (filVoice) utterance.voice = filVoice;
+    utterance.lang = 'fil-PH';
+    utterance.rate = 0.85;
+    utterance.pitch = 1.0;
+    utterance.onend = done;
+    utterance.onerror = done;
+    window.speechSynthesis.speak(utterance);
   },
 
   // 세부아노어 녹음 클립 재생 (인덱스 0~10)

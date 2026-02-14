@@ -1694,6 +1694,13 @@ body {
   font-size: 13px;
   color: var(--text);
   border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.supply-tag.tapped {
+  background: #E8D9A0;
+  border-color: var(--accent);
 }
 
 /* ===== 한눈에 보기 (일정 오버뷰) ===== */
