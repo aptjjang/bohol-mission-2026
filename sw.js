@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mission-2026-v22';
+const CACHE_NAME = 'mission-2026-v23';
 const urlsToCache = [
   './',
   './index.html',
@@ -72,11 +72,20 @@ self.addEventListener('activate', event => {
   );
 });
 
-// 요청 가로채기 (캐시 우선)
+// 네트워크 우선 → 실패 시 캐시 (자동 업데이트)
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(() => caches.match('./index.html'))
+    fetch(event.request)
+      .then(response => {
+        // 네트워크 성공 시 캐시도 갱신
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => {
+        // 오프라인일 때만 캐시 사용
+        return caches.match(event.request)
+          .then(response => response || caches.match('./index.html'));
+      })
   );
 });
