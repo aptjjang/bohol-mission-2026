@@ -745,6 +745,7 @@ const App = {
     const nextBtn = document.getElementById('album-viewer-next');
     const closeBtn = document.getElementById('album-viewer-close');
     const downloadBtn = document.getElementById('album-viewer-download');
+    const shareBtn = document.getElementById('album-viewer-share');
 
     const onDownload = (e) => {
       e.stopPropagation();
@@ -758,10 +759,28 @@ const App = {
       document.body.removeChild(a);
     };
 
+    const onShare = async (e) => {
+      e.stopPropagation();
+      const file = files[currentIdx];
+      const src = 'images/albums/day' + day + '/' + file;
+      try {
+        const res = await fetch(src);
+        const blob = await res.blob();
+        const shareFile = new File([blob], file, { type: blob.type });
+        await navigator.share({ files: [shareFile] });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          // 공유 미지원 시 다운로드로 대체
+          onDownload(e);
+        }
+      }
+    };
+
     prevBtn.addEventListener('click', onPrev);
     nextBtn.addEventListener('click', onNext);
     closeBtn.addEventListener('click', onClose);
     downloadBtn.addEventListener('click', onDownload);
+    shareBtn.addEventListener('click', onShare);
     document.addEventListener('keydown', onKey);
 
     let touchStartX = 0;
@@ -783,6 +802,7 @@ const App = {
       nextBtn.removeEventListener('click', onNext);
       closeBtn.removeEventListener('click', onClose);
       downloadBtn.removeEventListener('click', onDownload);
+      shareBtn.removeEventListener('click', onShare);
       document.removeEventListener('keydown', onKey);
       viewer.removeEventListener('touchstart', onTouchStart);
       viewer.removeEventListener('touchend', onTouchEnd);

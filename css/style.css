@@ -2048,7 +2048,22 @@ body {
   justify-content: center;
 }
 
-.album-viewer-download:active { background: rgba(255,255,255,0.3); }
+.album-viewer-download:active,
+.album-viewer-share:active { background: rgba(255,255,255,0.3); }
+
+.album-viewer-share {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .album-viewer-prev,
 .album-viewer-next {
