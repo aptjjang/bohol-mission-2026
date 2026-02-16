@@ -1,2 +1,16 @@
 [functions]
   directory = "netlify/functions"
+
+# TTS 함수는 그대로 유지
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# 그 외 모든 Netlify URL 접속 → GitHub Pages로 리다이렉트
+[[redirects]]
+  from = "/*"
+  to = "https://aptjjang.github.io/bohol-mission-2026/"
+  status = 301
+  force = true
