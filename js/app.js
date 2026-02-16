@@ -744,10 +744,24 @@ const App = {
     const prevBtn = document.getElementById('album-viewer-prev');
     const nextBtn = document.getElementById('album-viewer-next');
     const closeBtn = document.getElementById('album-viewer-close');
+    const downloadBtn = document.getElementById('album-viewer-download');
+
+    const onDownload = (e) => {
+      e.stopPropagation();
+      const file = files[currentIdx];
+      const src = 'images/albums/day' + day + '/' + file;
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = file;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
 
     prevBtn.addEventListener('click', onPrev);
     nextBtn.addEventListener('click', onNext);
     closeBtn.addEventListener('click', onClose);
+    downloadBtn.addEventListener('click', onDownload);
     document.addEventListener('keydown', onKey);
 
     let touchStartX = 0;
@@ -768,6 +782,7 @@ const App = {
       prevBtn.removeEventListener('click', onPrev);
       nextBtn.removeEventListener('click', onNext);
       closeBtn.removeEventListener('click', onClose);
+      downloadBtn.removeEventListener('click', onDownload);
       document.removeEventListener('keydown', onKey);
       viewer.removeEventListener('touchstart', onTouchStart);
       viewer.removeEventListener('touchend', onTouchEnd);
