@@ -683,12 +683,13 @@ const App = {
       });
     }
 
-    // 그리드 썸네일 클릭 → 전체화면 뷰어
-    container.querySelectorAll('.album-thumb').forEach(thumb => {
+    // 그리드 썸네일 클릭 → 통합 전체화면 뷰어
+    container.querySelectorAll('#album-grid-' + dayNum + ' .album-thumb').forEach(thumb => {
       thumb.addEventListener('click', () => {
-        const day = parseInt(thumb.dataset.day);
-        const idx = parseInt(thumb.dataset.idx);
-        this.openAlbumViewer(day, idx);
+        const img = thumb.querySelector('img');
+        const video = thumb.querySelector('video');
+        const src = img ? img.src : (video ? video.src : '');
+        if (src) this.openCombinedViewer(dayNum, src);
       });
     });
 
@@ -857,22 +858,91 @@ const App = {
     thumb.innerHTML = `<img src="${url}" alt="${filename}" loading="lazy"><span class="upload-badge">NEW</span>`;
 
     thumb.addEventListener('click', () => {
-      // 간단한 전체화면 보기
-      const viewer = document.getElementById('album-viewer');
-      const img = document.getElementById('album-viewer-image');
-      const counter = document.getElementById('album-viewer-counter');
-      img.src = url;
-      counter.textContent = filename;
-      viewer.classList.remove('hidden');
-
-      const closeViewer = () => {
-        viewer.classList.add('hidden');
-        document.getElementById('album-viewer-close').removeEventListener('click', closeViewer);
-      };
-      document.getElementById('album-viewer-close').addEventListener('click', closeViewer);
+      // 모든 사진 URL 수집 (정적 + 업로드)
+      this.openCombinedViewer(day, url);
     });
 
     grid.appendChild(thumb);
+  },
+
+  // 정적 사진 + 업로드 사진 통합 뷰어
+  openCombinedViewer(day, startUrl) {
+    // 모든 사진 URL 수집
+    const allUrls = [];
+    const staticGrid = document.getElementById('album-grid-' + day);
+    const uploadedGrid = document.getElementById('uploaded-grid-' + day);
+
+    if (staticGrid) {
+      staticGrid.querySelectorAll('.album-thumb').forEach(thumb => {
+        const img = thumb.querySelector('img');
+        const video = thumb.querySelector('video');
+        if (img) allUrls.push(img.src);
+        else if (video) allUrls.push(video.src);
+      });
+    }
+    if (uploadedGrid) {
+      uploadedGrid.querySelectorAll('.album-thumb img').forEach(img => {
+        allUrls.push(img.src);
+      });
+    }
+
+    if (!allUrls.length) return;
+
+    const viewer = document.getElementById('album-viewer');
+    const imgEl = document.getElementById('album-viewer-image');
+    const counter = document.getElementById('album-viewer-counter');
+    let currentIdx = allUrls.indexOf(startUrl);
+    if (currentIdx < 0) currentIdx = 0;
+
+    const show = (idx) => {
+      currentIdx = idx;
+      imgEl.src = allUrls[idx];
+      counter.textContent = (idx + 1) + ' / ' + allUrls.length;
+    };
+
+    show(currentIdx);
+    viewer.classList.remove('hidden');
+
+    const onPrev = (e) => { e.stopPropagation(); show(currentIdx > 0 ? currentIdx - 1 : allUrls.length - 1); };
+    const onNext = (e) => { e.stopPropagation(); show(currentIdx < allUrls.length - 1 ? currentIdx + 1 : 0); };
+    const onClose = () => cleanup();
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') onPrev(e);
+      else if (e.key === 'ArrowRight') onNext(e);
+      else if (e.key === 'Escape') cleanup();
+    };
+
+    const prevBtn = document.getElementById('album-viewer-prev');
+    const nextBtn = document.getElementById('album-viewer-next');
+    const closeBtn = document.getElementById('album-viewer-close');
+
+    prevBtn.addEventListener('click', onPrev);
+    nextBtn.addEventListener('click', onNext);
+    closeBtn.addEventListener('click', onClose);
+    document.addEventListener('keydown', onKey);
+
+    let touchStartX = 0;
+    const onTouchStart = (e) => { touchStartX = e.touches[0].clientX; };
+    const onTouchEnd = (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) onNext(e); else onPrev(e);
+      }
+    };
+    viewer.addEventListener('touchstart', onTouchStart);
+    viewer.addEventListener('touchend', onTouchEnd);
+
+    const cleanup = () => {
+      viewer.classList.add('hidden');
+      prevBtn.removeEventListener('click', onPrev);
+      nextBtn.removeEventListener('click', onNext);
+      closeBtn.removeEventListener('click', onClose);
+      document.removeEventListener('keydown', onKey);
+      viewer.removeEventListener('touchstart', onTouchStart);
+      viewer.removeEventListener('touchend', onTouchEnd);
+    };
+
+    this._albumViewerCleanup = cleanup;
   },
 
   async loadUploadedPhotos(day) {
