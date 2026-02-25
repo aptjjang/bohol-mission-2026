@@ -699,8 +699,9 @@ const App = {
       uploadBtn.addEventListener('click', () => uploadInput.click());
       uploadInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
-          this.handlePhotoUpload(dayNum, e.target.files);
+          const filesCopy = Array.from(e.target.files);
           e.target.value = '';
+          this.handlePhotoUpload(dayNum, filesCopy);
         }
       });
     }
