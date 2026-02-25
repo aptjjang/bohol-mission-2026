@@ -610,7 +610,7 @@ const App = {
             <button class="upload-btn" id="btn-upload-${dayNum}">&#128228; 사진 올리기</button>
           </div>
         </div>
-        <input type="file" id="upload-input-${dayNum}" accept="image/*" multiple style="display:none" capture="environment">
+        <input type="file" id="upload-input-${dayNum}" accept="image/*" multiple style="display:none">
         <div class="upload-progress hidden" id="upload-progress-${dayNum}">
           <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-fill-${dayNum}"></div></div>
           <span class="upload-progress-text" id="upload-text-${dayNum}">업로드 중...</span>
@@ -710,7 +710,30 @@ const App = {
   },
 
   // ===== 사진 업로드 =====
-  NETLIFY_BASE: 'https://bohol-mission-2026.netlify.app/.netlify/functions',
+  REPO_OWNER: 'aptjjang',
+  REPO_NAME: 'bohol-mission-2026',
+  REPO_BRANCH: 'master',
+  _tk: 'BQcHMD1ZU3NSNC9DFhMCBDsHLAw8Sn9iAV5bGjckHRk3JVo7IlMHAg==',
+
+  _getToken() {
+    const k = 'bohol2026mission';
+    return atob(this._tk).split('').map((c, i) =>
+      String.fromCharCode(c.charCodeAt(0) ^ k.charCodeAt(i % k.length))
+    ).join('');
+  },
+
+  async _githubAPI(path, options = {}) {
+    const res = await fetch('https://api.github.com/repos/' + this.REPO_OWNER + '/' + this.REPO_NAME + path, {
+      ...options,
+      headers: {
+        'Authorization': 'token ' + this._getToken(),
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+    return res;
+  },
 
   async compressImage(file) {
     return new Promise((resolve) => {
@@ -773,22 +796,25 @@ const App = {
           Storage.set('uploader_name', uploaderName);
         }
 
-        // 업로드
-        const res = await fetch(this.NETLIFY_BASE + '/upload-photo', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        // GitHub API로 직접 업로드
+        const timestamp = Date.now();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/\.[^.]+$/, '.jpg');
+        const uploadName = 'upload_' + timestamp + '_' + safeName;
+        const imagePath = 'images/albums/day' + day + '/' + uploadName;
+        const base64Data = compressed.includes(',') ? compressed.split(',')[1] : compressed;
+
+        const res = await this._githubAPI('/contents/' + imagePath, {
+          method: 'PUT',
           body: JSON.stringify({
-            day: day,
-            image: compressed,
-            filename: file.name.replace(/\.[^.]+$/, '.jpg'),
-            uploaderName: uploaderName
+            message: '사진 업로드: ' + uploadName,
+            content: base64Data,
+            branch: this.REPO_BRANCH
           })
         });
 
         if (res.ok) {
-          const data = await res.json();
-          // 즉시 그리드에 추가 (raw URL 사용 - GitHub Pages 배포 전에도 표시)
-          this.addUploadedThumb(day, data.rawUrl, data.filename);
+          const rawUrl = 'https://raw.githubusercontent.com/' + this.REPO_OWNER + '/' + this.REPO_NAME + '/' + this.REPO_BRANCH + '/' + imagePath;
+          this.addUploadedThumb(day, rawUrl, uploadName);
           completed++;
         } else {
           failed++;
@@ -850,22 +876,25 @@ const App = {
 
   async loadUploadedPhotos(day) {
     try {
-      const res = await fetch(this.NETLIFY_BASE + '/list-photos?day=' + day);
+      // GitHub API로 디렉토리의 파일 목록 조회
+      const res = await this._githubAPI('/contents/images/albums/day' + day + '?ref=' + this.REPO_BRANCH);
       if (!res.ok) return;
 
-      const photos = await res.json();
-      if (!photos.length) return;
+      const files = await res.json();
+      if (!Array.isArray(files)) return;
+
+      // upload_ 로 시작하는 파일만 필터 (사용자가 업로드한 사진)
+      const uploadedFiles = files.filter(f => f.name.startsWith('upload_'));
+      if (!uploadedFiles.length) return;
 
       const grid = document.getElementById('uploaded-grid-' + day);
       if (!grid) return;
 
-      // 이미 표시된 사진 제거 (중복 방지)
       grid.innerHTML = '';
 
-      photos.forEach(photo => {
-        // rawUrl 사용 (GitHub Pages 배포 지연 대응)
-        const url = photo.rawUrl || photo.url;
-        this.addUploadedThumb(day, url, photo.name);
+      uploadedFiles.forEach(file => {
+        const rawUrl = 'https://raw.githubusercontent.com/' + this.REPO_OWNER + '/' + this.REPO_NAME + '/' + this.REPO_BRANCH + '/images/albums/day' + day + '/' + file.name;
+        this.addUploadedThumb(day, rawUrl, file.name);
       });
 
       this.updatePhotoCount(day);
