@@ -1975,6 +1975,87 @@ body {
   pointer-events: none;
 }
 
+/* ===== 사진 업로드 ===== */
+.album-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-btn {
+  padding: 5px 12px;
+  background: var(--success);
+  color: var(--white);
+  border: none;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.upload-btn:active { background: #45a049; }
+.upload-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.upload-progress {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-progress.hidden { display: none; }
+
+.upload-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.upload-progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.upload-progress-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.uploaded-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.album-thumb-uploaded {
+  position: relative;
+}
+
+.upload-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--success);
+  color: var(--white);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
 /* ===== 전체화면 사진 뷰어 ===== */
 .album-viewer {
   position: fixed;

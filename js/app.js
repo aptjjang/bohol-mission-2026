@@ -580,7 +580,6 @@ const App = {
 
     // 앨범 데이터 확인
     const albumPhotos = (typeof AlbumData !== 'undefined' && AlbumData[dayNum]) ? AlbumData[dayNum] : [];
-    const hasPhotos = albumPhotos.length > 0;
 
     // 일지 데이터 불러오기
     const journalData = Storage.getJournal(dayNum);
@@ -593,7 +592,7 @@ const App = {
             <h3>${schedule.title}</h3>
             <span>${schedule.date}</span>
           </div>
-          ${hasPhotos ? `<button class="album-btn" id="btn-album-${dayNum}">&#128247; 사진 <span class="album-count">${albumPhotos.length}</span></button>` : ''}
+          <button class="album-btn" id="btn-album-${dayNum}">&#128247; 사진 <span class="album-count" id="album-count-${dayNum}">${albumPhotos.length}</span></button>
         </div>
         ${schedule.events.map(e =>
           `<div class="event-item">
@@ -603,24 +602,32 @@ const App = {
         ).join('')}
       </div>
 
-      ${hasPhotos ? `
       <div class="album-gallery" id="album-gallery-${dayNum}">
         <div class="album-gallery-header">
           <h4>&#128247; ${schedule.day}일차 사진첩</h4>
-          <span class="album-gallery-count">${albumPhotos.length}장</span>
+          <div class="album-header-actions">
+            <span class="album-gallery-count" id="album-gallery-count-${dayNum}">${albumPhotos.length}장</span>
+            <button class="upload-btn" id="btn-upload-${dayNum}">&#128228; 사진 올리기</button>
+          </div>
         </div>
-        <div class="album-grid">
+        <input type="file" id="upload-input-${dayNum}" accept="image/*" multiple style="display:none" capture="environment">
+        <div class="upload-progress hidden" id="upload-progress-${dayNum}">
+          <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-fill-${dayNum}"></div></div>
+          <span class="upload-progress-text" id="upload-text-${dayNum}">업로드 중...</span>
+        </div>
+        <div class="album-grid" id="album-grid-${dayNum}">
           ${albumPhotos.map((file, idx) => {
             const isVideo = file.endsWith('.mp4');
             const src = `images/albums/day${dayNum}/${file}`;
-            return `<div class="album-thumb ${isVideo ? 'album-thumb-video' : ''}" data-day="${dayNum}" data-idx="${idx}">
+            return `<div class="album-thumb ${isVideo ? 'album-thumb-video' : ''}" data-day="${dayNum}" data-idx="${idx}" data-src="${src}">
               ${isVideo
                 ? `<video src="${src}" muted preload="metadata"></video><span class="album-play-icon">&#9654;</span>`
                 : `<img src="${src}" alt="사진 ${idx + 1}" loading="lazy">`}
             </div>`;
           }).join('')}
         </div>
-      </div>` : ''}
+        <div class="uploaded-photos" id="uploaded-grid-${dayNum}"></div>
+      </div>
 
       <div class="schedule-journal-section">
         <div class="card">
@@ -667,25 +674,216 @@ const App = {
     weatherSel.addEventListener('change', saveJournal);
 
     // 사진 버튼 → 갤러리로 스크롤
-    if (hasPhotos) {
-      const albumBtn = document.getElementById('btn-album-' + dayNum);
-      const galleryEl = document.getElementById('album-gallery-' + dayNum);
-      if (albumBtn && galleryEl) {
-        albumBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          galleryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      }
-
-      // 그리드 썸네일 클릭 → 전체화면 뷰어
-      container.querySelectorAll('.album-thumb').forEach(thumb => {
-        thumb.addEventListener('click', () => {
-          const day = parseInt(thumb.dataset.day);
-          const idx = parseInt(thumb.dataset.idx);
-          this.openAlbumViewer(day, idx);
-        });
+    const albumBtn = document.getElementById('btn-album-' + dayNum);
+    const galleryEl = document.getElementById('album-gallery-' + dayNum);
+    if (albumBtn && galleryEl) {
+      albumBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        galleryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
+
+    // 그리드 썸네일 클릭 → 전체화면 뷰어
+    container.querySelectorAll('.album-thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const day = parseInt(thumb.dataset.day);
+        const idx = parseInt(thumb.dataset.idx);
+        this.openAlbumViewer(day, idx);
+      });
+    });
+
+    // 사진 업로드 버튼
+    const uploadBtn = document.getElementById('btn-upload-' + dayNum);
+    const uploadInput = document.getElementById('upload-input-' + dayNum);
+    if (uploadBtn && uploadInput) {
+      uploadBtn.addEventListener('click', () => uploadInput.click());
+      uploadInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          this.handlePhotoUpload(dayNum, e.target.files);
+          e.target.value = '';
+        }
+      });
+    }
+
+    // 업로드된 사진 로드
+    this.loadUploadedPhotos(dayNum);
+  },
+
+  // ===== 사진 업로드 =====
+  NETLIFY_BASE: 'https://bohol-mission-2026.netlify.app/.netlify/functions',
+
+  async compressImage(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 1920;
+          let { width, height } = img;
+
+          if (width > MAX_SIZE || height > MAX_SIZE) {
+            if (width > height) {
+              height = Math.round((height * MAX_SIZE) / width);
+              width = MAX_SIZE;
+            } else {
+              width = Math.round((width * MAX_SIZE) / height);
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  },
+
+  async handlePhotoUpload(day, files) {
+    const progressEl = document.getElementById('upload-progress-' + day);
+    const fillEl = document.getElementById('upload-fill-' + day);
+    const textEl = document.getElementById('upload-text-' + day);
+    const uploadBtn = document.getElementById('btn-upload-' + day);
+
+    progressEl.classList.remove('hidden');
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = '업로드 중...';
+
+    const total = files.length;
+    let completed = 0;
+    let failed = 0;
+
+    for (const file of files) {
+      try {
+        textEl.textContent = `업로드 중... (${completed + 1}/${total})`;
+        fillEl.style.width = Math.round((completed / total) * 100) + '%';
+
+        // 이미지 압축
+        const compressed = await this.compressImage(file);
+
+        // 업로더 이름 (localStorage에서)
+        let uploaderName = Storage.get('uploader_name');
+        if (!uploaderName) {
+          uploaderName = prompt('사진에 표시할 이름을 입력하세요:') || '익명';
+          Storage.set('uploader_name', uploaderName);
+        }
+
+        // 업로드
+        const res = await fetch(this.NETLIFY_BASE + '/upload-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            day: day,
+            image: compressed,
+            filename: file.name.replace(/\.[^.]+$/, '.jpg'),
+            uploaderName: uploaderName
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          // 즉시 그리드에 추가 (raw URL 사용 - GitHub Pages 배포 전에도 표시)
+          this.addUploadedThumb(day, data.rawUrl, data.filename);
+          completed++;
+        } else {
+          failed++;
+          completed++;
+        }
+      } catch (e) {
+        failed++;
+        completed++;
+      }
+    }
+
+    fillEl.style.width = '100%';
+    if (failed > 0) {
+      textEl.textContent = `완료! (${total - failed}장 성공, ${failed}장 실패)`;
+    } else {
+      textEl.textContent = `${total}장 업로드 완료!`;
+    }
+
+    uploadBtn.disabled = false;
+    uploadBtn.innerHTML = '&#128228; 사진 올리기';
+
+    // 카운트 업데이트
+    this.updatePhotoCount(day);
+
+    setTimeout(() => {
+      progressEl.classList.add('hidden');
+      fillEl.style.width = '0%';
+    }, 3000);
+  },
+
+  addUploadedThumb(day, url, filename) {
+    const grid = document.getElementById('uploaded-grid-' + day);
+    if (!grid) return;
+
+    const thumb = document.createElement('div');
+    thumb.className = 'album-thumb album-thumb-uploaded';
+    thumb.dataset.day = day;
+    thumb.dataset.src = url;
+    thumb.innerHTML = `<img src="${url}" alt="${filename}" loading="lazy"><span class="upload-badge">NEW</span>`;
+
+    thumb.addEventListener('click', () => {
+      // 간단한 전체화면 보기
+      const viewer = document.getElementById('album-viewer');
+      const img = document.getElementById('album-viewer-image');
+      const counter = document.getElementById('album-viewer-counter');
+      img.src = url;
+      counter.textContent = filename;
+      viewer.classList.remove('hidden');
+
+      const closeViewer = () => {
+        viewer.classList.add('hidden');
+        document.getElementById('album-viewer-close').removeEventListener('click', closeViewer);
+      };
+      document.getElementById('album-viewer-close').addEventListener('click', closeViewer);
+    });
+
+    grid.appendChild(thumb);
+  },
+
+  async loadUploadedPhotos(day) {
+    try {
+      const res = await fetch(this.NETLIFY_BASE + '/list-photos?day=' + day);
+      if (!res.ok) return;
+
+      const photos = await res.json();
+      if (!photos.length) return;
+
+      const grid = document.getElementById('uploaded-grid-' + day);
+      if (!grid) return;
+
+      // 이미 표시된 사진 제거 (중복 방지)
+      grid.innerHTML = '';
+
+      photos.forEach(photo => {
+        // rawUrl 사용 (GitHub Pages 배포 지연 대응)
+        const url = photo.rawUrl || photo.url;
+        this.addUploadedThumb(day, url, photo.name);
+      });
+
+      this.updatePhotoCount(day);
+    } catch (e) {
+      // 네트워크 오류 시 무시
+    }
+  },
+
+  updatePhotoCount(day) {
+    const albumPhotos = (typeof AlbumData !== 'undefined' && AlbumData[day]) ? AlbumData[day] : [];
+    const uploadedGrid = document.getElementById('uploaded-grid-' + day);
+    const uploadedCount = uploadedGrid ? uploadedGrid.children.length : 0;
+    const total = albumPhotos.length + uploadedCount;
+
+    const countEl = document.getElementById('album-count-' + day);
+    const galleryCountEl = document.getElementById('album-gallery-count-' + day);
+    if (countEl) countEl.textContent = total;
+    if (galleryCountEl) galleryCountEl.textContent = total + '장';
   },
 
   // ===== 사진첩 전체화면 뷰어 =====
