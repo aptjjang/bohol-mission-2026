@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mission-2026-v40';
+const CACHE_NAME = 'mission-2026-v41';
 const urlsToCache = [
   './',
   './index.html',
